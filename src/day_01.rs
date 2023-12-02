@@ -1,3 +1,5 @@
+//! Day 01
+
 use anyhow::{anyhow, Error, Result};
 
 const INPUT: &str = include_str!("../input/day_01.txt");
@@ -13,6 +15,13 @@ const DIGITS: [(&str, &str); 9] = [
     ("9", "nine"),
 ];
 
+/// Part 1
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(aoc::day_01::part_1().unwrap(), 57346);
+/// ```
 pub fn part_1() -> Result<i64> {
     let mut sum = 0;
     for line in INPUT.lines() {
@@ -21,6 +30,13 @@ pub fn part_1() -> Result<i64> {
     Ok(sum)
 }
 
+/// Part 2
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(aoc::day_01::part_2().unwrap(), 57345);
+/// ```
 pub fn part_2() -> Result<i64> {
     let mut sum = 0;
     for line in INPUT.lines() {
@@ -80,9 +96,7 @@ fn part_1_example() {
 }
 
 #[test]
-fn part_1_check() {
-    assert_eq!(part_1().unwrap(), 57346);
-}
+fn part_1_check() {}
 
 #[test]
 fn part_2_example() {
@@ -96,9 +110,4 @@ fn part_2_example() {
     );
     assert_eq!(calibration_value_with_words("zoneight234").unwrap(), 14);
     assert_eq!(calibration_value_with_words("7pqrstsixteen").unwrap(), 76);
-}
-
-#[test]
-fn part_2_check() {
-    assert_eq!(part_2().unwrap(), 57345);
 }

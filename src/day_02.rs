@@ -1,12 +1,28 @@
+//! Day 02
+
 use anyhow::{anyhow, Error, Result};
 use std::{collections::HashMap, str::FromStr};
 
 const INPUT: &str = include_str!("../input/day_02.txt");
 
+/// Part 1
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(aoc::day_02::part_1().unwrap(), 2512);
+/// ```
 pub fn part_1() -> Result<i64> {
     sum_of_ids_of_possible_games(INPUT)
 }
 
+/// Part 2
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(aoc::day_02::part_2().unwrap(), 67335);
+/// ```
 pub fn part_2() -> Result<i64> {
     sum_of_the_power(INPUT)
 }
@@ -88,8 +104,8 @@ impl FromStr for Game {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Game> {
-        let (front, back) = split_once(s, ':')?;
-        let (game_prefix, id) = split_once(front, ' ')?;
+        let (front, back) = crate::str::split_once(s, ':')?;
+        let (game_prefix, id) = crate::str::split_once(front, ' ')?;
         if game_prefix != "Game" {
             return Err(anyhow!("string does not start with 'Game': {}", s));
         }
@@ -97,8 +113,8 @@ impl FromStr for Game {
         for s in back.split(';') {
             let mut reveal = HashMap::new();
             for s in s.split(',').map(|s| s.trim()) {
-                let (count, color) = split_once(s, ' ')?;
-                reveal.insert(color.parse()?, count.parse()?);
+                let (count, color) = crate::str::split_once(s, ' ')?;
+                let _ = reveal.insert(color.parse()?, count.parse()?);
             }
             reveals.push(reveal);
         }
@@ -123,11 +139,6 @@ impl FromStr for Color {
     }
 }
 
-fn split_once(s: &str, delimiter: char) -> Result<(&str, &str)> {
-    s.split_once(delimiter)
-        .ok_or_else(|| anyhow!("could not find '{}' in {}", delimiter, s))
-}
-
 #[test]
 fn game_from_str() {
     let game: Game = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
@@ -146,11 +157,6 @@ Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
 Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
     assert_eq!(sum_of_ids_of_possible_games(input).unwrap(), 8);
-}
-
-#[test]
-fn part_1_check() {
-    assert_eq!(part_1().unwrap(), 2512);
 }
 
 #[test]
