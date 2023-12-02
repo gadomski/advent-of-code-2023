@@ -1,8 +1,17 @@
-use std::collections::HashMap;
-
 use anyhow::{anyhow, Error, Result};
 
 const INPUT: &str = include_str!("../input/day_01.txt");
+const DIGITS: [(&str, &str); 9] = [
+    ("1", "one"),
+    ("2", "two"),
+    ("3", "three"),
+    ("4", "four"),
+    ("5", "five"),
+    ("6", "six"),
+    ("7", "seven"),
+    ("8", "eight"),
+    ("9", "nine"),
+];
 
 pub fn part_1() -> Result<i64> {
     let mut sum = 0;
@@ -27,28 +36,8 @@ fn calibration_value(s: &str) -> Result<i64> {
 }
 
 fn calibration_value_with_words(s: &str) -> Result<i64> {
-    let mut lookup = HashMap::with_capacity(18);
-    lookup.insert("1", "1");
-    lookup.insert("one", "1");
-    lookup.insert("2", "2");
-    lookup.insert("two", "2");
-    lookup.insert("3", "3");
-    lookup.insert("three", "3");
-    lookup.insert("4", "4");
-    lookup.insert("four", "4");
-    lookup.insert("5", "5");
-    lookup.insert("five", "5");
-    lookup.insert("6", "6");
-    lookup.insert("six", "6");
-    lookup.insert("7", "7");
-    lookup.insert("seven", "7");
-    lookup.insert("8", "8");
-    lookup.insert("eight", "8");
-    lookup.insert("9", "9");
-    lookup.insert("nine", "9");
-    let first =
-        first_digit_with_words(s, &lookup).ok_or_else(|| anyhow!("no first digit: {}", s))?;
-    let last = last_digit_with_words(s, &lookup).ok_or_else(|| anyhow!("no last digit: {}", s))?;
+    let first = first_digit_with_words(s).ok_or_else(|| anyhow!("no first digit: {}", s))?;
+    let last = last_digit_with_words(s).ok_or_else(|| anyhow!("no last digit: {}", s))?;
     format!("{}{}", first, last).parse().map_err(Error::from)
 }
 
@@ -60,28 +49,22 @@ fn last_digit(s: &str) -> Option<char> {
     s.chars().rev().find(|c| c.is_digit(10))
 }
 
-fn first_digit_with_words(
-    s: &str,
-    lookup: &HashMap<&'static str, &'static str>,
-) -> Option<&'static str> {
+fn first_digit_with_words(s: &str) -> Option<&'static str> {
     for (i, _) in s.char_indices() {
-        for (key, value) in lookup {
-            if s[i..].starts_with(key) {
-                return Some(value);
+        for (a, b) in DIGITS {
+            if s[i..].starts_with(a) || s[i..].starts_with(b) {
+                return Some(a);
             }
         }
     }
     None
 }
 
-fn last_digit_with_words(
-    s: &str,
-    lookup: &HashMap<&'static str, &'static str>,
-) -> Option<&'static str> {
+fn last_digit_with_words(s: &str) -> Option<&'static str> {
     for (i, _) in s.char_indices().rev() {
-        for (key, value) in lookup {
-            if s[i..].starts_with(key) {
-                return Some(value);
+        for (a, b) in DIGITS {
+            if s[i..].starts_with(a) || s[i..].starts_with(b) {
+                return Some(a);
             }
         }
     }
