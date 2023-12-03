@@ -96,9 +96,6 @@ fn part_1_example() {
 }
 
 #[test]
-fn part_1_check() {}
-
-#[test]
 fn part_2_example() {
     assert_eq!(calibration_value_with_words("two1nine").unwrap(), 29);
     assert_eq!(calibration_value_with_words("eightwothree").unwrap(), 83);
