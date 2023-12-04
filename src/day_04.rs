@@ -2,7 +2,7 @@
 
 use anyhow::{anyhow, Error, Result};
 use std::{
-    collections::{BTreeMap, HashMap, HashSet},
+    collections::{HashMap, HashSet},
     str::FromStr,
 };
 
@@ -40,18 +40,16 @@ fn points(s: &str) -> Result<i64> {
 }
 
 fn number_of_scratchcards(s: &str) -> Result<i64> {
-    let mut cards = BTreeMap::new();
-    let mut counts = HashMap::new();
+    let mut counts: HashMap<i64, i64> = HashMap::new();
     for line in s.lines() {
         let card: Card = line.parse()?;
-        let _ = counts.insert(card.id, 1);
-        let _unused = cards.insert(card.id, card);
-    }
-    for (id, card) in cards {
-        let count = counts.get(&id).unwrap().clone();
         let number_of_matches: i64 = card.number_of_matches().try_into()?;
+        if !counts.contains_key(&card.id) {
+            let _ = counts.insert(card.id, 1);
+        }
+        let count = counts.get(&card.id).cloned().unwrap();
         for i in 0..number_of_matches {
-            let future_count = counts.get_mut(&(i + id + 1)).unwrap();
+            let future_count = counts.entry(i + card.id + 1).or_insert(1);
             *future_count += count;
         }
     }
