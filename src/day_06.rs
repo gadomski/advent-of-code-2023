@@ -20,7 +20,7 @@ pub fn part_1() -> Result<i64> {
 /// # Examples
 ///
 /// ```
-///  assert_eq!(aoc::day_06::part_1().unwrap(), 35150181);
+/// assert_eq!(aoc::day_06::part_2().unwrap(), 35150181);
 /// ```
 pub fn part_2() -> Result<i64> {
     Ok(number_of_ways_to_beat_the_record(61709066, 643118413621041))
