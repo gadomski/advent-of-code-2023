@@ -18,7 +18,7 @@ pub fn part_1() -> Result<i64> {
 
 /// Part 2
 pub fn part_2() -> Result<i64> {
-    todo!()
+    lowest_location_number_with_ranges(INPUT)
 }
 
 fn lowest_location_number(s: &str) -> Result<i64> {
@@ -31,6 +31,19 @@ fn lowest_location_number(s: &str) -> Result<i64> {
         }
     }
     Ok(lowest_location_number)
+}
+
+fn lowest_location_number_with_ranges(s: &str) -> Result<i64> {
+    let almanac: Almanac = s.parse()?;
+    for i in 0.. {
+        let seed = almanac.seed_for_location(i);
+        for chunk in almanac.seeds.chunks_exact(2) {
+            if seed >= chunk[0] && seed < chunk[0] + chunk[1] {
+                return Ok(i);
+            }
+        }
+    }
+    unreachable!()
 }
 
 #[derive(Debug)]
@@ -57,12 +70,29 @@ impl Almanac {
         }
         value
     }
+
+    fn seed_for_location(&self, location: i64) -> i64 {
+        let mut value = location;
+        for map in self.maps.iter().rev() {
+            value = map.reverse_transform(value);
+        }
+        value
+    }
 }
 
 impl Map {
     fn transform(&self, value: i64) -> i64 {
         for range in &self.0 {
             if let Some(value) = range.transform(value) {
+                return value;
+            }
+        }
+        value
+    }
+
+    fn reverse_transform(&self, value: i64) -> i64 {
+        for range in &self.0 {
+            if let Some(value) = range.reverse_transform(value) {
                 return value;
             }
         }
@@ -75,6 +105,15 @@ impl Range {
         let diff = value - self.source_start;
         if diff >= 0 && diff < self.length {
             Some(self.destination_start + diff)
+        } else {
+            None
+        }
+    }
+
+    fn reverse_transform(&self, value: i64) -> Option<i64> {
+        let diff = value - self.destination_start;
+        if diff >= 0 && diff < self.length {
+            Some(self.source_start + diff)
         } else {
             None
         }
@@ -179,4 +218,42 @@ humidity-to-location map:
     assert_eq!(almanac.location_for_seed(55), 86);
     assert_eq!(almanac.location_for_seed(13), 35);
     assert_eq!(lowest_location_number(input).unwrap(), 35);
+}
+
+#[test]
+fn part_2_example() {
+    let input = "seeds: 79 14 55 13
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4";
+    assert_eq!(lowest_location_number_with_ranges(input).unwrap(), 46);
 }
