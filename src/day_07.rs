@@ -1,7 +1,7 @@
 //! Day 07
 
-use anyhow::{anyhow, Error, Result};
-use std::{cmp::Ordering, collections::HashMap, str::FromStr};
+use anyhow::{anyhow, Result};
+use std::{cmp::Ordering, collections::HashMap};
 
 const INPUT: &str = include_str!("../input/day_07.txt");
 
@@ -13,13 +13,24 @@ const INPUT: &str = include_str!("../input/day_07.txt");
 /// assert_eq!(aoc::day_07::part_1().unwrap(), 250232501);
 /// ```
 pub fn part_1() -> Result<i64> {
-    total_winnings(INPUT)
+    total_winnings(INPUT, false)
 }
 
-fn total_winnings(s: &str) -> Result<i64> {
+/// Part 2
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(aoc::day_07::part_2().unwrap(), 249138943);
+/// ```
+pub fn part_2() -> Result<i64> {
+    total_winnings(INPUT, true)
+}
+
+fn total_winnings(s: &str, use_jokers: bool) -> Result<i64> {
     let mut hands = s
         .lines()
-        .map(|line| line.parse::<Hand>())
+        .map(|line| Hand::new(line, use_jokers))
         .collect::<Result<Vec<_>>>()?;
     hands.sort();
     let mut total_winnings = 0;
@@ -47,32 +58,65 @@ enum HandType {
     HighCard = 0,
 }
 
+impl Hand {
+    fn new(s: &str, use_jokers: bool) -> Result<Hand> {
+        let (card_names, bid) = crate::str::split_once(s, ' ')?;
+        let mut cards = [0; 5];
+        for (name, card) in card_names.chars().zip(cards.iter_mut()) {
+            *card = match name {
+                'A' => 14,
+                'K' => 13,
+                'Q' => 12,
+                'J' => {
+                    if use_jokers {
+                        1
+                    } else {
+                        11
+                    }
+                }
+                'T' => 10,
+                _ => name
+                    .to_digit(10)
+                    .ok_or_else(|| anyhow!("could not make digit: {}", name))?,
+            };
+        }
+        Ok(Hand {
+            hand_type: HandType::from(cards),
+            cards,
+            bid: bid.parse()?,
+        })
+    }
+}
+
 impl From<[u32; 5]> for HandType {
     fn from(cards: [u32; 5]) -> HandType {
         use HandType::*;
 
         let mut map: HashMap<u32, usize> = HashMap::new();
         for card in cards {
-            let entry = map.entry(card).or_default();
-            *entry += 1;
+            if card != 1 {
+                // Jokers aren't counted, they just make the counts work (it's magic!)
+                let entry = map.entry(card).or_default();
+                *entry += 1;
+            }
         }
         let mut counts: Vec<_> = map.values().cloned().collect();
         counts.sort();
         counts.reverse();
         match counts.len() {
-            1 => FiveOfAKind,
+            0 | 1 => FiveOfAKind,
             2 => {
-                if counts[0] == 4 {
-                    FourOfAKind
-                } else {
+                if counts[1] == 2 {
                     FullHouse
+                } else {
+                    FourOfAKind
                 }
             }
             3 => {
-                if counts[0] == 3 {
-                    ThreeOfAKind
-                } else {
+                if counts[1] == 2 {
                     TwoPair
+                } else {
+                    ThreeOfAKind
                 }
             }
             4 => OnePair,
@@ -115,32 +159,6 @@ impl Ord for Hand {
     }
 }
 
-impl FromStr for Hand {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Hand> {
-        let (card_names, bid) = crate::str::split_once(s, ' ')?;
-        let mut cards = [0; 5];
-        for (name, card) in card_names.chars().zip(cards.iter_mut()) {
-            *card = match name {
-                'A' => 14,
-                'K' => 13,
-                'Q' => 12,
-                'J' => 11,
-                'T' => 10,
-                _ => name
-                    .to_digit(10)
-                    .ok_or_else(|| anyhow!("could not make digit: {}", name))?,
-            };
-        }
-        Ok(Hand {
-            hand_type: HandType::from(cards),
-            cards,
-            bid: bid.parse()?,
-        })
-    }
-}
-
 #[test]
 fn part_1_example() {
     let input = "32T3K 765
@@ -148,10 +166,20 @@ T55J5 684
 KK677 28
 KTJJT 220
 QQQJA 483";
-    assert_eq!(total_winnings(input).unwrap(), 6440);
+    assert_eq!(total_winnings(input, false).unwrap(), 6440);
 }
 
 #[test]
 fn enum_ordering() {
     assert!(HandType::FiveOfAKind > HandType::FourOfAKind);
+}
+
+#[test]
+fn part_2_example() {
+    let input = "32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483";
+    assert_eq!(total_winnings(input, true).unwrap(), 5905);
 }
