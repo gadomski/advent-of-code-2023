@@ -21,7 +21,7 @@ pub fn part_1() -> Result<usize> {
 /// # Examples
 ///
 /// ```
-/// // assert_eq!(aoc::day_08::part_2().unwrap(), 20569);
+/// assert_eq!(aoc::day_08::part_2().unwrap(), 21366921060721);
 /// ```
 pub fn part_2() -> Result<usize> {
     steps_to_reach_all_zs(INPUT)
