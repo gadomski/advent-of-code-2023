@@ -8,7 +8,9 @@ This year's self-imposed rules:
 - Never unwrap (except in tests)
 - No warnings
 - Never break part 1 to solve part 2
-- No dependencies other than **anyhow**
+- Minimal dependencies
+  - **anyhow** for easy error handling, because who wants to muck around with that?
+  - **num-integer** for least-common multiple, because again who wants to implement that algorithm from scratch?
 
 ## License
 

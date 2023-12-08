@@ -33,6 +33,6 @@ fn main() -> Result<()> {
     println!("Day 07 part 1: {}", day_07::part_1()?);
     println!("       part 2: {}", day_07::part_2()?);
     println!("Day 08 part 1: {}", day_08::part_1()?);
-    // println!("       part 2: {}", day_07::part_2()?);
+    println!("       part 2: {}", day_08::part_2()?);
     Ok(())
 }
