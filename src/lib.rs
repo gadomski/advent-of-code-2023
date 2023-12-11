@@ -19,7 +19,6 @@
     unused_macro_rules,
     unused_qualifications,
     unused_results,
-    unused_tuple_struct_fields,
     variant_size_differences
 )]
 
@@ -32,5 +31,6 @@ pub mod day_06;
 pub mod day_07;
 pub mod day_08;
 pub mod day_09;
+pub mod day_10;
 pub mod iter;
 pub mod str;
