@@ -22,7 +22,7 @@ There are one or more slow-running days where we resorted to brute force.
 Run those with `--all`:
 
 ```shell
-cargo run -- --all
+cargo run --release -- --all
 ```
 
 ## Testing
