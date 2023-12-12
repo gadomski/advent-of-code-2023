@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use aoc::{day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10};
+use aoc::{day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11};
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
@@ -37,5 +37,6 @@ fn main() -> Result<()> {
     println!("Day 09 part 1: {}", day_09::part_1()?);
     println!("       part 2: {}", day_09::part_2()?);
     println!("Day 10 part 1: {}", day_10::part_1()?);
+    println!("Day 11 part 1: {}", day_11::part_1()?);
     Ok(())
 }
