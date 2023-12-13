@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Result};
 use aoc::{
     day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11, day_12,
+    day_13,
 };
 
 fn main() -> Result<()> {
@@ -47,5 +48,6 @@ fn main() -> Result<()> {
     } else {
         println!("       part 2: skipped");
     }
+    println!("Day 13 part 1: {}", day_13::part_1()?);
     Ok(())
 }
