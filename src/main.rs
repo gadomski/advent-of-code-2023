@@ -42,5 +42,10 @@ fn main() -> Result<()> {
     println!("Day 11 part 1: {}", day_11::part_1()?);
     println!("       part 2: {}", day_11::part_2()?);
     println!("Day 12 part 1: {}", day_12::part_1()?);
+    if all {
+        println!("       part 2: {}", day_12::part_2()?);
+    } else {
+        println!("       part 2: skipped");
+    }
     Ok(())
 }
