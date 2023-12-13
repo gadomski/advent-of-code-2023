@@ -13,13 +13,24 @@ const INPUT: &str = include_str!("../input/day_13.txt");
 /// assert_eq!(aoc::day_13::part_1().unwrap(), 32723);
 /// ```
 pub fn part_1() -> Result<i64> {
-    summarize(INPUT)
+    summarize(INPUT, false)
 }
 
-fn summarize(s: &str) -> Result<i64> {
+/// Part 2
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(aoc::day_13::part_2().unwrap(), 34536);
+/// ```
+pub fn part_2() -> Result<i64> {
+    summarize(INPUT, true)
+}
+
+fn summarize(s: &str, smudge: bool) -> Result<i64> {
     let mut sum = 0;
     for (i, pattern) in s.split("\n\n").enumerate() {
-        let pattern: Pattern = pattern.parse()?;
+        let pattern = pattern.parse::<Pattern>()?.smudge(smudge);
         if let Some(col) = pattern.find_vertical_reflection() {
             sum += col + 1;
         } else if let Some(row) = pattern.find_horizontal_reflection() {
@@ -36,6 +47,7 @@ struct Pattern {
     rocks: HashSet<Location>,
     min: Location,
     max: Location,
+    smudge: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -45,6 +57,11 @@ struct Location {
 }
 
 impl Pattern {
+    fn smudge(mut self, smudge: bool) -> Pattern {
+        self.smudge = smudge;
+        self
+    }
+
     fn find_vertical_reflection(&self) -> Option<i64> {
         for col in 0..self.max.col {
             if self.has_vertical_reflection(col) {
@@ -57,16 +74,29 @@ impl Pattern {
     fn has_vertical_reflection(&self, col: i64) -> bool {
         let mut left = col;
         let mut right = col + 1;
+        let mut one_smudge = false;
         while left >= self.min.col && right <= self.max.col {
             for row in self.min.row..=self.max.row {
                 if !self.equal(Location { row, col: left }, Location { row, col: right }) {
-                    return false;
+                    if self.smudge {
+                        if one_smudge {
+                            return false;
+                        } else {
+                            one_smudge = true;
+                        }
+                    } else {
+                        return false;
+                    }
                 }
             }
             left -= 1;
             right += 1;
         }
-        true
+        if self.smudge {
+            one_smudge
+        } else {
+            true
+        }
     }
 
     fn find_horizontal_reflection(&self) -> Option<i64> {
@@ -81,16 +111,29 @@ impl Pattern {
     fn has_horizontal_reflection(&self, row: i64) -> bool {
         let mut top = row;
         let mut bottom = row + 1;
+        let mut one_smudge = false;
         while top >= self.min.row && bottom <= self.max.row {
             for col in self.min.col..=self.max.col {
                 if !self.equal(Location { row: top, col }, Location { row: bottom, col }) {
-                    return false;
+                    if self.smudge {
+                        if one_smudge {
+                            return false;
+                        } else {
+                            one_smudge = true;
+                        }
+                    } else {
+                        return false;
+                    }
                 }
             }
             top -= 1;
             bottom += 1;
         }
-        true
+        if self.smudge {
+            one_smudge
+        } else {
+            true
+        }
     }
 
     fn equal(&self, a: Location, b: Location) -> bool {
@@ -132,7 +175,12 @@ impl FromStr for Pattern {
                 }
             }
         }
-        Ok(Pattern { rocks, min, max })
+        Ok(Pattern {
+            rocks,
+            min,
+            max,
+            smudge: false,
+        })
     }
 }
 
@@ -153,5 +201,25 @@ fn part_1_example() {
 #####.##.
 ..##..###
 #....#..#";
-    assert_eq!(summarize(input).unwrap(), 405);
+    assert_eq!(summarize(input, false).unwrap(), 405);
+}
+
+#[test]
+fn part_2_example() {
+    let input = "#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.
+
+#...##..#
+#....#..#
+..##..###
+#####.##.
+#####.##.
+..##..###
+#....#..#";
+    assert_eq!(summarize(input, true).unwrap(), 400);
 }

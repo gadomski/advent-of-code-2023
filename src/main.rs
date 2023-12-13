@@ -49,5 +49,6 @@ fn main() -> Result<()> {
         println!("       part 2: skipped");
     }
     println!("Day 13 part 1: {}", day_13::part_1()?);
+    println!("       part 2: {}", day_13::part_2()?);
     Ok(())
 }
