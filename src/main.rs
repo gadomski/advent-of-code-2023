@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use aoc::{
     day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11, day_12,
-    day_13, day_14, day_15,
+    day_13, day_14, day_15, day_16,
 };
 
 fn main() -> Result<()> {
@@ -53,5 +53,6 @@ fn main() -> Result<()> {
     println!("Day 14 part 1: {}", day_14::part_1()?);
     println!("Day 15 part 1: {}", day_15::part_1()?);
     println!("       part 2: {}", day_15::part_2()?);
+    println!("Day 16 part 1: {}", day_16::part_1()?);
     Ok(())
 }
