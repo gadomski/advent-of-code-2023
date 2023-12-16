@@ -19,9 +19,32 @@ pub fn part_1() -> Result<usize> {
     energized_tiles(INPUT)
 }
 
+/// Part 2
+pub fn part_2() -> Result<usize> {
+    max_energized_tiles(INPUT)
+}
+
 fn energized_tiles(s: &str) -> Result<usize> {
     let contraption: Contraption = s.parse()?;
-    Ok(contraption.energized_tiles())
+    Ok(contraption.energized_tiles(Beam::new(0, -1, Direction::East)))
+}
+
+fn max_energized_tiles(s: &str) -> Result<usize> {
+    use Direction::*;
+
+    let contraption: Contraption = s.parse()?;
+    let mut counts = vec![];
+
+    for row in 0..=contraption.max.row {
+        counts.push(contraption.energized_tiles(Beam::new(row, -1, East)));
+        counts.push(contraption.energized_tiles(Beam::new(row, contraption.max.col + 1, West)));
+    }
+    for col in 0..=contraption.max.col {
+        counts.push(contraption.energized_tiles(Beam::new(-1, col, South)));
+        counts.push(contraption.energized_tiles(Beam::new(contraption.max.row + 1, col, North)));
+    }
+
+    counts.into_iter().max().ok_or_else(|| anyhow!("no max"))
 }
 
 #[derive(Debug)]
@@ -60,14 +83,14 @@ enum Direction {
 }
 
 impl Contraption {
-    fn energized_tiles(&self) -> usize {
+    fn energized_tiles(&self, start: Beam) -> usize {
         use Device::*;
         use Direction::*;
 
-        let mut active_beams = vec![Beam::new(0, -1, East)];
+        let mut active_beams = vec![start];
         let mut beams = HashSet::new();
         while let Some(beam) = active_beams.pop() {
-            if beam.location != Location::new(0, -1) && !beams.insert(beam) {
+            if self.contains(beam.location) && !beams.insert(beam) {
                 continue;
             }
             let beam = beam.advance();
@@ -275,4 +298,19 @@ fn part_1_example() {
 .|....-|.\\
 ..//.|....";
     assert_eq!(energized_tiles(input).unwrap(), 46);
+}
+
+#[test]
+fn part_2_example() {
+    let input = ".|...\\....
+|.-.\\.....
+.....|-...
+........|.
+..........
+.........\\
+..../.\\\\..
+.-.-/..|..
+.|....-|.\\
+..//.|....";
+    assert_eq!(max_energized_tiles(input).unwrap(), 51);
 }
